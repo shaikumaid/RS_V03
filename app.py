@@ -84,12 +84,12 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             col = cols[i % 2]
             with col:
                 # Display Book Title and Author in main view
+                st.image(book['Image-URL-M'], width=120, use_container_width=True)  # Smaller image size
                 st.markdown(f"**{book['Book-Title']}**")
                 st.markdown(f"Author: {book['Book-Author']}")
                 
                 # Move the Average Rating to the "More Info" section
                 with st.expander("More Info"):
-                    st.image(book['Image-URL-M'], width=150, use_container_width=True)
                     st.write(f"Average Rating: {avg_rating:.2f}")
                     st.write(f"ISBN: {isbn}")
 
