@@ -52,13 +52,16 @@ def recommend_for_book(title, n=5):
     # Debugging: Check the match result
     st.write(f"Best Match for '{title}':", best_match)
 
-    if best_match is None or best_match[1] < 80:  # Adjust threshold if needed
+    if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
+        st.warning(f"No match found for '{title}'.")
         return []
 
     matched_title = best_match[0]
     matched = Books_df[Books_df['cleaned_title'] == matched_title]
     if matched.empty:
+        st.warning(f"Could not find any matches for '{title}' in the dataset.")
         return []
+    
     isbn = matched.iloc[0]['ISBN']
     if isbn not in item_sim_matrix:
         return []
