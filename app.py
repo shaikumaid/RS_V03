@@ -76,7 +76,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             continue
         book = book.iloc[0]
         avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
-        
+
         # Main display: Book Title, Author, and Image
         st.markdown(f"""
         <div style="display: flex; align-items: center; margin-bottom: 20px;">
@@ -88,11 +88,10 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         </div>
         """, unsafe_allow_html=True)
 
-        # More Info Dropdown Below Author (same size)
+        # More Info dropdown below Author text (same size as the Author text)
         with st.expander(f"More Info about '{book['Book-Title']}'", expanded=False):
             st.write(f"**Average Rating:** {avg_rating:.2f}")
             st.write(f"**ISBN:** {isbn}")
-
 
 # Streamlit UI
 st.title("📚 Book Recommendation System")
