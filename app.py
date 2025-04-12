@@ -83,14 +83,15 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             # Place each book in a different column for grid layout
             col = cols[i % 2]
             with col:
-                st.image(book['Image-URL-M'], width=150, use_container_width=True)
+                # Display Book Title and Author in main view
                 st.markdown(f"**{book['Book-Title']}**")
                 st.markdown(f"Author: {book['Book-Author']}")
-                st.markdown(f"Average Rating: {avg_rating:.2f}")
+                
+                # Move the Average Rating to the "More Info" section
                 with st.expander("More Info"):
+                    st.image(book['Image-URL-M'], width=150, use_container_width=True)
+                    st.write(f"Average Rating: {avg_rating:.2f}")
                     st.write(f"ISBN: {isbn}")
-                    st.write(f"Description: {book.get('Book-Description', 'No description available.')}")
-                    # You can add more info about the book here
 
 # Streamlit UI
 st.title("📚 Book Recommendation System")
