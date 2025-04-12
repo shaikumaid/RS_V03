@@ -89,11 +89,6 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                 st.write(f"**ISBN:** {isbn}")
 
 
-            # More Info dropdown right under Title and Author
-            with st.expander("More Info", expanded=False):
-                st.write(f"**Average Rating:** {avg_rating:.2f}")
-                st.write(f"**ISBN:** {isbn}")
-
 # Streamlit UI
 st.title("📚 Book Recommendation System")
 
