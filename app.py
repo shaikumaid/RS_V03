@@ -83,19 +83,14 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         book = book.iloc[0]
         avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
 
-        # Display row layout
         cols = st.columns([1, 4])
         with cols[0]:
-            st.markdown(f"""
-                <div class="zoom-container">
-                    <img src="{book['Image-URL-M']}" alt="Book Cover">
-                </div>
-            """, unsafe_allow_html=True)
+            st.image(book['Image-URL-M'], use_container_width=True)
         with cols[1]:
             st.markdown(f"""
                 <div style="font-size: 16px; line-height: 1.4;">
                     <b>{book['Book-Title']}</b><br>
-                    Author: {book['Book-Author']}<br>
+                    Author: {book['Book-Author']}
                     <details style="font-size: 14px; margin-top: 6px;">
                         <summary style="cursor: pointer;">More Info</summary>
                         ISBN: {book['ISBN']}<br>
@@ -108,22 +103,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 st.set_page_config(page_title="Book Recommender", layout="centered")
 st.title("📚 Book Recommendation System")
 
-# Custom CSS for zoom effect and centering inputs
+# CSS for centering
 st.markdown("""
     <style>
-        .zoom-container {
-            overflow: hidden;
-            width: 100px;
-            height: 150px;
-        }
-        .zoom-container img {
-            width: 100%;
-            height: 100%;
-            transition: transform 0.3s ease;
-        }
-        .zoom-container img:hover {
-            transform: scale(1.5);
-        }
         .centered {
             display: flex;
             flex-direction: column;
@@ -136,7 +118,7 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Centered Input Section
+# Centered input section
 st.markdown('<div class="centered">', unsafe_allow_html=True)
 option = st.radio("🔍 Recommend based on:", ["User ID", "Book Title"])
 st.markdown('</div>', unsafe_allow_html=True)
