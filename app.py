@@ -72,7 +72,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
         isbns = top_isbns
         if not heading:  # only if not already set (e.g., from book_title)
-            heading = "📚 Top Rated Books (Fallback)"
+            heading = "📚 Top Rated Books"
 
     if not isbns:
         st.warning("⚠️ No recommendations found.")
