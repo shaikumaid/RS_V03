@@ -52,18 +52,27 @@ def recommend_for_book(title, n=5):
     return [isbn for isbn, _ in sorted_books[:n]]
 
 def hybrid_recommend(user_id=None, book_title=None, n=5):
-    if user_id and user_id in user_item_matrix.index:
-        isbns = recommend_for_user(user_id, n)
-        heading = f"📚 Top {n} Recommendations for User ID {user_id}"
+    isbns = []
+    heading = ""
+
+    if user_id:
+        if user_id in user_item_matrix.index:
+            isbns = recommend_for_user(user_id, n)
+            heading = f"📚 Top {n} Recommendations for User ID {user_id}"
+        else:
+            st.warning("❌ Wrong User ID entered. Please check and try again.")
+    
     elif book_title:
         isbns = recommend_for_book(book_title, n)
         heading = f"📚 Top {n} Books Similar to '{book_title}'"
-    else:
+
+    if not isbns:
         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
         count_ratings = filtered_df['ISBN'].value_counts()
         top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
         isbns = top_isbns
-        heading = "📚 Top Rated Books (Fallback)"
+        if not heading:  # only if not already set (e.g., from book_title)
+            heading = "📚 Top Rated Books (Fallback)"
 
     if not isbns:
         st.warning("⚠️ No recommendations found.")
@@ -76,11 +85,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             continue
         book = book.iloc[0]
         avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
-
-        # Layout: Image on the left, Title and Author to the right
         col1, col2 = st.columns([1, 3])
         with col1:
-            st.image(book['Image-URL-M'], use_container_width=True)  # ✅ Updated here
+            st.image(book['Image-URL-M'], use_container_width=True)
         with col2:
             st.markdown(f"**{book['Book-Title']}**")
             st.markdown(f"Author: {book['Book-Author']}")
