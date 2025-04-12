@@ -88,8 +88,8 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         </div>
         """, unsafe_allow_html=True)
 
-        # More Info Section
-        with st.expander(f"More Info about '{book['Book-Title']}'"):
+        # More Info Dropdown Below Author (same size)
+        with st.expander(f"More Info about '{book['Book-Title']}'", expanded=False):
             st.write(f"**Average Rating:** {avg_rating:.2f}")
             st.write(f"**ISBN:** {isbn}")
 
