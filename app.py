@@ -77,21 +77,18 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         book = book.iloc[0]
         avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
 
-        # Main display: Book Title, Author, and Image
-        st.markdown(f"""
-        <div style="display: flex; align-items: center; margin-bottom: 20px;">
-            <img src="{book['Image-URL-M']}" style="height: 100px; margin-right: 15px;">
-            <div>
-                <b>{book['Book-Title']}</b><br>
-                Author: {book['Book-Author']}
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        # Layout: Image on the left, Title and Author to the right
+        col1, col2 = st.columns([1, 3])
+        with col1:
+            st.image(book['Image-URL-M'], use_column_width=True, height=150)
+        with col2:
+            st.markdown(f"**{book['Book-Title']}**")
+            st.markdown(f"Author: {book['Book-Author']}")
 
-        # More Info dropdown below Author text (same size as the Author text)
-        with st.expander(f"More Info about '{book['Book-Title']}'", expanded=False):
-            st.write(f"**Average Rating:** {avg_rating:.2f}")
-            st.write(f"**ISBN:** {isbn}")
+            # More Info dropdown right under Title and Author
+            with st.expander("More Info", expanded=False):
+                st.write(f"**Average Rating:** {avg_rating:.2f}")
+                st.write(f"**ISBN:** {isbn}")
 
 # Streamlit UI
 st.title("📚 Book Recommendation System")
