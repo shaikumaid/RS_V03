@@ -80,7 +80,8 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         # Layout: Image on the left, Title and Author to the right
         col1, col2 = st.columns([1, 3])
         with col1:
-            st.image(book['Image-URL-M'], use_column_width=True, height=150)
+            # Updated image display without 'height' argument
+            st.image(book['Image-URL-M'], use_column_width=True)  # Removed the 'height' argument
         with col2:
             st.markdown(f"**{book['Book-Title']}**")
             st.markdown(f"Author: {book['Book-Author']}")
