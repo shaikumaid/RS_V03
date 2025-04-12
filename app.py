@@ -97,6 +97,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                 with st.expander("More Info", expanded=False):
                     st.markdown(f"Average Rating: **{avg_rating:.2f}**")
                     st.markdown(f"**ISBN:** {isbn}")
+        
+        # Adding space between books
+        st.markdown("<br>", unsafe_allow_html=True)
 
 # -----------------------------
 # UI Layout
