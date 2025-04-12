@@ -6,4 +6,5 @@ fuzzywuzzy
 python-Levenshtein
 streamlit
 matplotlib
+openpyxl
 
