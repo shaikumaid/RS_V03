@@ -95,7 +95,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                 st.markdown(f"**{book['Book-Title']}**")
                 st.markdown(f"*Author: {book['Book-Author']}*")
                 with st.expander("More Info", expanded=False):
-                    st.markdown(f"Average Rating: **{avg_rating:.2f}**")
+                    st.markdown(f"**Average Rating:** {avg_rating:.2f}")
+                    st.markdown(f"**ISBN:** {isbn}")
+
 
 # -----------------------------
 # UI Layout
