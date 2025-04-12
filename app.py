@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
+from fuzzywuzzy import process  # Fuzzy matching
 
 # Load data from Excel
 @st.cache_data
@@ -38,7 +39,24 @@ def recommend_for_user(user_id, n=5):
     return sorted_books[:n]
 
 def recommend_for_book(title, n=5):
-    matched = Books_df[Books_df['Book-Title'].str.lower() == title.lower()]
+    # Clean and normalize book titles for comparison
+    Books_df['cleaned_title'] = Books_df['Book-Title'].str.strip().str.lower()
+
+    # Debugging: print out some of the titles and cleaned titles
+    st.write("Original Titles in Dataset:", Books_df['Book-Title'].head(10).tolist())
+    st.write("Cleaned Titles in Dataset:", Books_df['cleaned_title'].head(10).tolist())
+
+    # Find the best match using fuzzywuzzy
+    best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
+
+    # Debugging: Check the match result
+    st.write(f"Best Match for '{title}':", best_match)
+
+    if best_match is None or best_match[1] < 80:  # Adjust threshold if needed
+        return []
+
+    matched_title = best_match[0]
+    matched = Books_df[Books_df['cleaned_title'] == matched_title]
     if matched.empty:
         return []
     isbn = matched.iloc[0]['ISBN']
