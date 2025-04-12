@@ -69,34 +69,27 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         st.warning("⚠️ No recommendations found.")
         return
 
-    # Display Recommendations
     st.markdown(f"### {heading}")
-    with st.spinner('Loading recommendations...'):
-        cols = st.columns(2)  # Create two columns for a grid layout
-        for i, isbn in enumerate(isbns):
-            book = Books_df[Books_df['ISBN'] == isbn]
-            if book.empty:
-                continue
-            book = book.iloc[0]
-            avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
-
-            # Place each book in a different column for grid layout
-            col = cols[i % 2]
-            with col:
-                # Display Book Title and Author in main view
-                st.image(book['Image-URL-M'], width=120, use_container_width=True)  # Smaller image size
-                st.markdown(f"**{book['Book-Title']}**")
-                st.markdown(f"Author: {book['Book-Author']}")
-                
-                # Move the Average Rating to the "More Info" section
-                with st.expander("More Info"):
-                    st.write(f"Average Rating: {avg_rating:.2f}")
-                    st.write(f"ISBN: {isbn}")
+    for isbn in isbns:
+        book = Books_df[Books_df['ISBN'] == isbn]
+        if book.empty:
+            continue
+        book = book.iloc[0]
+        avg_rating = filtered_df[filtered_df['ISBN'] == isbn]['Book-Rating'].mean()
+        st.markdown(f"""
+        <div style="display: flex; align-items: center; margin-bottom: 20px;">
+            <img src="{book['Image-URL-M']}" style="height: 150px; margin-right: 15px;">
+            <div>
+                <b>{book['Book-Title']}</b><br>
+                Author: {book['Book-Author']}<br>
+                Average Rating: {avg_rating:.2f}
+            </div>
+        </div>
+        """, unsafe_allow_html=True)
 
 # Streamlit UI
 st.title("📚 Book Recommendation System")
 
-# Radio Button for choosing recommendation method
 option = st.radio("🔍 Recommend based on:", ["User ID", "Book Title"])
 
 if option == "User ID":
