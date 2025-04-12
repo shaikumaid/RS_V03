@@ -1,7 +1,8 @@
 import streamlit as st
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from IPython.display import HTML
+st.markdown(html, unsafe_allow_html=True)
+
 
 # Cache data loading
 @st.cache_data
