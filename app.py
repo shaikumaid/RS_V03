@@ -81,11 +81,17 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             <img src="{book['Image-URL-M']}" style="height: 150px; margin-right: 15px;">
             <div>
                 <b>{book['Book-Title']}</b><br>
-                Author: {book['Book-Author']}<br>
-                Average Rating: {avg_rating:.2f}
+                Author: {book['Book-Author']}
             </div>
         </div>
         """, unsafe_allow_html=True)
+
+        # More Info Section
+        with st.expander(f"More Info about '{book['Book-Title']}'"):
+            st.write(f"**Average Rating:** {avg_rating:.2f}")
+            st.write(f"**ISBN:** {isbn}")
+            st.write(f"**Description:** {book.get('Book-Description', 'No description available.')}")
+
 
 # Streamlit UI
 st.title("📚 Book Recommendation System")
