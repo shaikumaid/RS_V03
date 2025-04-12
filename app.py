@@ -51,29 +51,27 @@ import streamlit as st
      ), reverse=True)
      return [isbn for isbn, _ in sorted_books[:n]]
  
- def hybrid_recommend(user_id=None, book_title=None, n=5):
-     isbns = []
-     show_fallback = False
- 
-     if user_id and user_id in user_item_matrix.index:
-         isbns = recommend_for_user(user_id, n)
-         heading = f"📚 Top {n} Recommendations for User ID {user_id}"
-     elif user_id and user_id not in user_item_matrix.index:
-         st.error("❌ Invalid User ID. Please check and try again.")
-         show_fallback = True
-         heading = "📚 Top Rated Books (Fallback)"
-     elif book_title:
-         isbns = recommend_for_book(book_title, n)
-         heading = f"📚 Top {n} Books Similar to '{book_title}'"
-     else:
-         show_fallback = True
-         heading = "📚 Top Rated Books (Fallback)"
- 
-     if show_fallback:
-         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
-         count_ratings = filtered_df['ISBN'].value_counts()
-         top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
-         isbns = top_isbns
+def hybrid_recommend(user_id=None, book_title=None, n=5):
+    if user_id and user_id in user_item_matrix.index:
+        isbns = recommend_for_user(user_id, n)
+        heading = f"📚 Top {n} Recommendations for User ID {user_id}"
+    elif book_title:
+        isbns = recommend_for_book(book_title, n)
+        heading = f"📚 Top {n} Books Similar to '{book_title}'"
+        if not isbns:
+            st.warning("⚠️ No recommendations found. Showing Top Rated Books instead.")
+            # Fallback to top-rated books
+            avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
+            count_ratings = filtered_df['ISBN'].value_counts()
+            top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
+            isbns = top_isbns
+            heading = "📚 Top Rated Books (Fallback)"
+    else:
+        avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
+        count_ratings = filtered_df['ISBN'].value_counts()
+        top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
+        isbns = top_isbns
+        heading = "📚 Top Rated Books (Fallback)"
  
      if not isbns:
          st.warning("⚠️ No recommendations found.")
