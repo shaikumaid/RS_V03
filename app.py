@@ -83,7 +83,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             # Place each book in a different column for grid layout
             col = cols[i % 2]
             with col:
-                st.image(book['Image-URL-M'], width=150, use_column_width=True)
+                st.image(book['Image-URL-M'], width=150, use_container_width=True)
                 st.markdown(f"**{book['Book-Title']}**")
                 st.markdown(f"Author: {book['Book-Author']}")
                 st.markdown(f"Average Rating: {avg_rating:.2f}")
