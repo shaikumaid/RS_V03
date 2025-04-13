@@ -177,7 +177,7 @@ with col2:
             st.session_state.typed_title = ""
 
         # Popular titles for dropdown
-        top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
+        top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
         # Dropdown input
@@ -185,7 +185,7 @@ with col2:
 
         # Top-bottom layout: Textbox at the top, dropdown below
         # Textbox input (fixed height, no expand option)
-        typed_title = st.text_area("Or Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
+        typed_title = st.text_area("Or Type a book title:", value=st.session_state.typed_title, height=100, key="typed_title", on_change=clear_dropdown)
 
         final_title = typed_title.strip() or selected_dropdown.strip()
 
