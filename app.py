@@ -181,6 +181,16 @@ with col2:
         top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
+        # Custom CSS to increase the width of the text area
+        st.markdown(
+            """
+            <style>
+            .css-1q4t6d5 {
+                width: 100% !important;
+            }
+            </style>
+            """, unsafe_allow_html=True)
+
         # Top-bottom layout
         input_col1, input_col2 = st.columns([1, 1])  # Equal space for both columns
         with input_col1:
