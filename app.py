@@ -42,32 +42,35 @@ def recommend_for_book(title, n=5):
     # Clean and normalize book titles for comparison
     Books_df['cleaned_title'] = Books_df['Book-Title'].str.strip().str.lower()
 
-    # Find the best match using fuzzywuzzy
+    # Perform fuzzy matching to find similar books
     matches = process.extract(title.lower(), Books_df['cleaned_title'].tolist(), limit=5)
 
     if not matches:
         st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
         return None  # Fallback if no match is found
 
-    best_match = matches[0]  # Get the best match
+    best_match = matches[0]  # Get the best match (most similar)
     matched_title = best_match[0]
 
+    # Find all books that match this best fuzzy match
     matched_books = Books_df[Books_df['cleaned_title'] == matched_title]
+
     if matched_books.empty:
         st.warning(f"Could not find any matches for '{title}'. Showing top-rated fallback books.")
-        return None  # Fallback if no exact match found
+        return None  # If no match, show fallback books
     
+    # Get the ISBN of the matched book
     isbn = matched_books.iloc[0]['ISBN']
-    
-    # Check if the book is in the trained model (item similarity matrix)
+
+    # Check if the book is part of the trained model (item similarity matrix)
     if isbn not in item_sim_matrix:
         st.warning(f"'{title}' was found but not in the trained model. Showing similar books based on title.")
         
-        # Here, we use fuzzy matching to get books with similar titles (fuzzy match threshold can be adjusted)
+        # Show books with similar titles from the dataset (fuzzy match results)
         similar_books = Books_df[Books_df['cleaned_title'].str.contains(matched_title, na=False)].head(n)
         return similar_books['ISBN'].tolist()  # Return ISBNs of similar books
 
-    # If the book is in the trained model, proceed with the regular item-based similarity
+    # If the book is in the trained model, show item-based similarity results
     similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])  # Drop the original book from its similarity
     sorted_books = sorted(similar_scores.items(), key=lambda x: (
         x[1],
@@ -75,7 +78,6 @@ def recommend_for_book(title, n=5):
     ), reverse=True)
 
     return [isbn for isbn, _ in sorted_books[:n]]  # Return the top `n` books
-
 
 def hybrid_recommend(user_id=None, book_title=None, n=5):
     isbns = []
@@ -100,6 +102,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         heading = "📚 Top Rated Books (Fallback)"
 
     if show_fallback:
+        # Fallback to top-rated books based on average ratings and a minimum of 20 ratings
         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
         count_ratings = filtered_df['ISBN'].value_counts()
         top_isbns = avg_ratings[count_ratings >= 20].sort_values(ascending=False).head(n).index.tolist()
@@ -130,6 +133,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
         # Adding space between books
         st.markdown("<br>", unsafe_allow_html=True)
+
 
 # -----------------------------
 # UI Layout
