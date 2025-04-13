@@ -150,23 +150,45 @@ with col2:
     st.subheader("🔍 Recommend based on:")
     option = st.radio("", ["User ID", "Book Title"], horizontal=True)
 
+    # Initialize session state variables
+    if "typed_title" not in st.session_state:
+        st.session_state.typed_title = ""
+    if "dropdown_title" not in st.session_state:
+        st.session_state.dropdown_title = ""
+
     if option == "User ID":
-        user_id = st.number_input("Enter User ID:", min_value=1, step=1)
-        if st.button("Get Recommendations"):
+        user_id = st.number_input("Enter User ID:", min_value=1, step=1, key="user_input")
+        if st.button("Get Recommendations", key="user_btn"):
             hybrid_recommend(user_id=int(user_id))
 
     else:
-        st.markdown("You can either **type** a book title or **select** one from the dropdown.")
-        typed_title = st.text_input("Type a book title:")
-
+        # Top 100 popular book titles for dropdown
         top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
         top_titles = Books_df[Books_df['ISBN'].isin(top_isbns)][['Book-Title']].dropna()
-        book_options = top_titles['Book-Title'].drop_duplicates().sort_values().tolist()
-        dropdown_title = st.selectbox("Or choose from dropdown:", [""] + book_options)
+        book_options = sorted(top_titles['Book-Title'].drop_duplicates().tolist())
 
-        if st.button("Get Recommendations"):
-            title_to_use = typed_title if typed_title.strip() else dropdown_title
-            if not title_to_use:
-                st.warning("Please type or select a book title.")
+        def clear_dropdown():
+            st.session_state.dropdown_title = ""
+
+        def clear_textbox():
+            st.session_state.typed_title = ""
+
+        # Text input with callback to clear dropdown
+        typed_title = st.text_input("Or type a book title:", key="typed_title", on_change=clear_dropdown)
+
+        # Dropdown with callback to clear text box
+        dropdown_title = st.selectbox(
+            "Or choose from dropdown:",
+            [""] + book_options,
+            key="dropdown_title",
+            on_change=clear_textbox,
+        )
+
+        # Determine which input was used
+        final_title = st.session_state.typed_title or st.session_state.dropdown_title
+
+        if st.button("Get Recommendations", key="book_btn"):
+            if final_title.strip():
+                hybrid_recommend(book_title=final_title)
             else:
-                hybrid_recommend(book_title=title_to_use)
+                st.warning("⚠️ Please enter or select a book title.")
