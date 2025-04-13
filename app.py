@@ -44,27 +44,26 @@ def recommend_for_book(title, n=5):
 
     # Find the best match using fuzzywuzzy
     matches = process.extract(title.lower(), Books_df['cleaned_title'].tolist(), limit=5)
-    st.write(f"Fuzzy Matches for '{title}':", matches)  # Debugging: See all the matches
 
-    # Check if the best match score is above a threshold
-    best_match = matches[0] if matches else None
-    if best_match is None or best_match[1] < 60:  # Relaxing threshold to 60
+    if not matches:
         st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
-        return None  # Return None to trigger fallback recommendations
+        return None  # Fallback if no match is found
 
+    best_match = matches[0]  # Get the best match
     matched_title = best_match[0]
-    matched = Books_df[Books_df['cleaned_title'] == matched_title]
-    if matched.empty:
-        st.warning(f"Could not find any matches for '{title}' in the dataset. Showing top-rated fallback books.")
-        return None  # Return None to trigger fallback recommendations
 
-    isbn = matched.iloc[0]['ISBN']
+    matched_books = Books_df[Books_df['cleaned_title'] == matched_title]
+    if matched_books.empty:
+        st.warning(f"Could not find any matches for '{title}'. Showing top-rated fallback books.")
+        return None  # Fallback if no exact match found
+    
+    isbn = matched_books.iloc[0]['ISBN']
     
     # Check if the book is in the trained model (item similarity matrix)
     if isbn not in item_sim_matrix:
         st.warning(f"'{title}' was found but not in the trained model. Showing similar books based on title.")
         
-        # Here, we can use fuzzy matching to find similar books based on title
+        # Here, we use fuzzy matching to get books with similar titles (fuzzy match threshold can be adjusted)
         similar_books = Books_df[Books_df['cleaned_title'].str.contains(matched_title, na=False)].head(n)
         return similar_books['ISBN'].tolist()  # Return ISBNs of similar books
 
@@ -91,7 +90,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         heading = "📚 Top Rated Books (Fallback)"
     elif book_title:
         isbns = recommend_for_book(book_title, n)
-        if isbns is None:  # Check if None was returned, indicating no valid book found
+        if isbns is None:
             show_fallback = True
             heading = "📚 Top Rated Books (Fallback)"
         else:
