@@ -87,7 +87,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         if isbns is None:
             show_fallback = True
             fallback_message = (
-                f"❗Couldn’t find similar books for the title '**{book_title}**'. "
+                f"❗Couldn’t find similar books for the title '**{book_title}**'. Please check and enter again. "
                 f"Showing top-rated books instead."
             )
             heading = "📚 Top Rated Books"
