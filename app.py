@@ -194,7 +194,7 @@ with col2:
         # Top-bottom layout
         input_col1, input_col2 = st.columns([1, 1])  # Equal space for both columns
         with input_col1:
-            typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
+            typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=100, key="typed_title", on_change=clear_dropdown)
         with input_col2:
             selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
 
