@@ -147,7 +147,6 @@ st.title("📚 Book Recommendation System")
 col1, col2, col3 = st.columns([1, 2, 1])
 
 # Inside the 'Book Title' section
-# Inside the 'Book Title' section
 with col2:
     st.subheader("🔍 Recommend based on:")
 
@@ -181,20 +180,12 @@ with col2:
         top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
-        # Custom CSS to increase the width of the text area
-        st.markdown(
-            """
-            <style>
-            .css-1q4t6d5 {
-                width: 100% !important;
-            }
-            </style>
-            """, unsafe_allow_html=True)
-
-        # Top-bottom layout
+        # Top-bottom layout: Textbox at the top, dropdown below
         input_col1, input_col2 = st.columns([1, 1])  # Equal space for both columns
+        
         with input_col1:
-            typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=100, key="typed_title", on_change=clear_dropdown)
+            typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
+        
         with input_col2:
             selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
 
@@ -205,3 +196,4 @@ with col2:
                 hybrid_recommend(book_title=final_title)
             else:
                 st.warning("⚠️ Please enter or select a book title.")
+
