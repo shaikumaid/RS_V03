@@ -43,11 +43,11 @@ def recommend_for_book(title, n=5):
     Books_df['cleaned_title'] = Books_df['Book-Title'].str.strip().str.lower()
 
     # Find the best match using fuzzywuzzy
-    best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
+    matches = process.extract(title.lower(), Books_df['cleaned_title'].tolist(), limit=5)
+    st.write(f"Fuzzy Matches for '{title}':", matches)  # Debugging: See all the matches
 
-    # Debugging: Check the match result
-    st.write(f"Best Match for '{title}':", best_match)
-
+    # Check if the best match score is above a threshold
+    best_match = matches[0] if matches else None
     if best_match is None or best_match[1] < 60:  # Relaxing threshold to 60
         st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
         return None  # Return None to trigger fallback recommendations
@@ -59,11 +59,16 @@ def recommend_for_book(title, n=5):
         return None  # Return None to trigger fallback recommendations
 
     isbn = matched.iloc[0]['ISBN']
+    
+    # Check if the book is in the trained model (item similarity matrix)
     if isbn not in item_sim_matrix:
-        st.warning(f"'{title}' was found but not in the trained model. Showing top-rated fallback books.")
-        return None  # Return None to trigger fallback recommendations
+        st.warning(f"'{title}' was found but not in the trained model. Showing similar books based on title.")
+        
+        # Here, we can use fuzzy matching to find similar books based on title
+        similar_books = Books_df[Books_df['cleaned_title'].str.contains(matched_title, na=False)].head(n)
+        return similar_books['ISBN'].tolist()  # Return ISBNs of similar books
 
-    # If match is found, get similar books
+    # If the book is in the trained model, proceed with the regular item-based similarity
     similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])  # Drop the original book from its similarity
     sorted_books = sorted(similar_scores.items(), key=lambda x: (
         x[1],
@@ -126,7 +131,6 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
         # Adding space between books
         st.markdown("<br>", unsafe_allow_html=True)
-
 
 # -----------------------------
 # UI Layout
