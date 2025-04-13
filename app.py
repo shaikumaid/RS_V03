@@ -76,6 +76,7 @@ def recommend_for_book(title, n=5):
 def hybrid_recommend(user_id=None, book_title=None, n=5):
     isbns = []
     show_fallback = False
+    fallback_message = None
 
     if user_id and user_id in user_item_matrix.index:
         isbns = recommend_for_user(user_id, n)
@@ -85,6 +86,10 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         isbns = recommend_for_book(book_title, n)
         if isbns is None:
             show_fallback = True
+            fallback_message = (
+                f"❗Couldn’t find similar books for the title '**{book_title}**'. "
+                f"Showing top-rated fallback books instead."
+            )
             heading = "📚 Top Rated Books (Fallback)"
         else:
             heading = f"📚 Top {n} Books Similar to '{book_title}'"
@@ -102,6 +107,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
     if not isbns:
         st.warning("⚠️ No recommendations found.")
         return
+
+    if fallback_message:
+        st.warning(fallback_message)
 
     st.markdown(f"### {heading}")
     for isbn in isbns:
@@ -122,6 +130,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                     st.markdown(f"Average Rating: **{avg_rating:.2f}**")
                     st.markdown(f"**ISBN:** {isbn}")
         st.markdown("<br>", unsafe_allow_html=True)
+
 
 # -----------------------------
 # Streamlit UI
