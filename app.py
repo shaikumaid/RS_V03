@@ -45,7 +45,7 @@ def recommend_for_book(title, n=5):
 
 
     # Find the best match using fuzzywuzzy
-    best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
+    #best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
     # Debugging: Check the match result
     st.write(f"Best Match for '{title}':", best_match)
