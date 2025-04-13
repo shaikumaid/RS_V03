@@ -88,7 +88,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             show_fallback = True
             fallback_message = (
                 f"❗Couldn’t find similar books for the title '**{book_title}**'. "
-                f"Showing top-rated fallback books instead."
+                f"Showing top-rated books instead."
             )
             heading = "📚 Top Rated Books"
         else:
