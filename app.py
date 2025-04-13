@@ -1,14 +1,14 @@
+from fuzzywuzzy import process
 import streamlit as st
 import pandas as pd
 from sklearn.metrics.pairwise import cosine_similarity
-from fuzzywuzzy import process  # Fuzzy matching
 
-# Load data from Excel
+# Load the data
 @st.cache_data
 def load_data():
     filtered_df = pd.read_excel("filtered_df.xlsx")
-    books_df = pd.read_excel("Books_df.xlsx")
-    return filtered_df, books_df
+    Books_df = pd.read_excel("Books_df.xlsx")
+    return filtered_df, Books_df
 
 filtered_df, Books_df = load_data()
 
@@ -37,8 +37,6 @@ def recommend_for_user(user_id, n=5):
         filtered_df[filtered_df['ISBN'] == x]['Book-Rating'].mean()
     ), reverse=True)
     return sorted_books[:n]
-
-from fuzzywuzzy import process
 
 def recommend_for_book(title, n=5):
     # Clean and normalize book titles for comparison
@@ -136,9 +134,10 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         # Adding space between books
         st.markdown("<br>", unsafe_allow_html=True)
 
-# -----------------------------
+
+# ----------------------------- #
 # UI Layout
-# -----------------------------
+# ----------------------------- #
 
 st.title("📚 Book Recommendation System")
 
@@ -146,7 +145,7 @@ st.title("📚 Book Recommendation System")
 col1, col2, col3 = st.columns([1, 2, 1])  # Makes col2 centered
 
 with col2:
-    st.subheader("🔍 Recommend based on:")
+    st.subheader("🔍 Recommend based on: ")
     option = st.radio("", ["User ID", "Book Title"], horizontal=True)
 
     if option == "User ID":
@@ -160,6 +159,6 @@ with col2:
         top_titles = Books_df[Books_df['ISBN'].isin(top_isbns)][['Book-Title']].dropna()
         book_options = top_titles['Book-Title'].drop_duplicates().sort_values().tolist()
 
-        title = st.selectbox("Choose or type a book title:", book_options)
-        if st.button("Get Recommendations"):
+        title = st.text_input("Enter Book Title:", "")
+        if st.button("Get Recommendations") and title:
             hybrid_recommend(book_title=title)
