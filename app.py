@@ -45,31 +45,29 @@ def recommend_for_book(title, n=5):
     # Find the best match using fuzzywuzzy
     best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
-    # Debugging: Check the match result
-    # st.write(f"Best Match for '{title}':", best_match)
-
     if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
         st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
-        return None
+        return None  # Return None to trigger fallback recommendations
 
     matched_title = best_match[0]
     matched = Books_df[Books_df['cleaned_title'] == matched_title]
     if matched.empty:
         st.warning(f"Could not find any matches for '{title}' in the dataset. Showing top-rated fallback books.")
-        return None
+        return None  # Return None to trigger fallback recommendations
 
     isbn = matched.iloc[0]['ISBN']
     if isbn not in item_sim_matrix:
         st.warning(f"'{title}' was found but not in the trained model. Showing top-rated fallback books.")
-        return None
+        return None  # Return None to trigger fallback recommendations
 
-    similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])
+    # If match is found, get similar books
+    similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])  # Drop the original book from its similarity
     sorted_books = sorted(similar_scores.items(), key=lambda x: (
         x[1],
         filtered_df[filtered_df['ISBN'] == x[0]]['Book-Rating'].mean()
     ), reverse=True)
 
-    return [isbn for isbn, _ in sorted_books[:n]]
+    return [isbn for isbn, _ in sorted_books[:n]]  # Return the top `n` books
 
 
 def hybrid_recommend(user_id=None, book_title=None, n=5):
@@ -85,10 +83,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         heading = "📚 Top Rated Books (Fallback)"
     elif book_title:
         isbns = recommend_for_book(book_title, n)
-        if isbns is None:
-            show_fallback = True
-
-        if isbns is None:
+        if isbns is None:  # Check if None was returned, indicating no valid book found
             show_fallback = True
             heading = "📚 Top Rated Books (Fallback)"
         else:
