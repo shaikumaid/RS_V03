@@ -181,8 +181,8 @@ with col2:
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
         # Top-bottom layout: Textbox at the top, dropdown below
-        # Textbox input
-        typed_title = st.text_box("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
+        # Textbox input (fixed height, no expand option)
+        typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
 
         # Dropdown input
         selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
@@ -194,3 +194,4 @@ with col2:
                 hybrid_recommend(book_title=final_title)
             else:
                 st.warning("⚠️ Please enter or select a book title.")
+
