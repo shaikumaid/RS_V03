@@ -45,7 +45,10 @@ def recommend_for_book(title, n=5):
     # Find the best match using fuzzywuzzy
     best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
-    if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
+    # Debugging: Check the match result
+    st.write(f"Best Match for '{title}':", best_match)
+
+    if best_match is None or best_match[1] < 60:  # Relaxing threshold to 60
         st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
         return None  # Return None to trigger fallback recommendations
 
@@ -123,6 +126,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
         # Adding space between books
         st.markdown("<br>", unsafe_allow_html=True)
+
 
 # -----------------------------
 # UI Layout
