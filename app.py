@@ -38,6 +38,8 @@ def recommend_for_user(user_id, n=5):
     ), reverse=True)
     return sorted_books[:n]
 
+from fuzzywuzzy import process
+
 def recommend_for_book(title, n=5):
     # Clean and normalize book titles for comparison
     Books_df['cleaned_title'] = Books_df['Book-Title'].str.strip().str.lower()
@@ -133,7 +135,6 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
         # Adding space between books
         st.markdown("<br>", unsafe_allow_html=True)
-
 
 # -----------------------------
 # UI Layout
