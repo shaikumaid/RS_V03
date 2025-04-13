@@ -45,23 +45,22 @@ def recommend_for_book(title, n=5):
     # Find the best match using fuzzywuzzy
     best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
-    # Debugging: Check the match result
-    #st.write(f"Best Match for '{title}':", best_match)
+    # Debugging: Show match result
+    st.write(f"Best Match for '{title}':", best_match)
 
-    if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
+    if best_match is None or best_match[1] < 70:
         st.warning(f"No match found for '{title}'. Showing top-rated fallback books.")
-        return None
-
+        return None  # Trigger fallback
     matched_title = best_match[0]
     matched = Books_df[Books_df['cleaned_title'] == matched_title]
     if matched.empty:
         st.warning(f"Could not find any matches for '{title}' in the dataset. Showing top-rated fallback books.")
-        return None
+        return None  # Trigger fallback
 
     isbn = matched.iloc[0]['ISBN']
     if isbn not in item_sim_matrix:
         st.warning(f"'{title}' was found but not in the trained model. Showing top-rated fallback books.")
-        return None
+        return None  # Trigger fallback
 
     similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])
     sorted_books = sorted(similar_scores.items(), key=lambda x: (
@@ -69,6 +68,7 @@ def recommend_for_book(title, n=5):
         filtered_df[filtered_df['ISBN'] == x[0]]['Book-Rating'].mean()
     ), reverse=True)
     return [isbn for isbn, _ in sorted_books[:n]]
+
 
 def hybrid_recommend(user_id=None, book_title=None, n=5):
     isbns = []
@@ -83,6 +83,9 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
         heading = "📚 Top Rated Books (Fallback)"
     elif book_title:
         isbns = recommend_for_book(book_title, n)
+        if isbns is None:
+            show_fallback = True
+
         if isbns is None:
             show_fallback = True
             heading = "📚 Top Rated Books (Fallback)"
