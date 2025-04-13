@@ -146,17 +146,25 @@ st.title("📚 Book Recommendation System")
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
+# Inside the 'Book Title' section
 with col2:
     st.subheader("🔍 Recommend based on:")
-    option = st.radio("", ["User ID", "Book Title"], horizontal=True)
 
+    if "input_mode" not in st.session_state:
+        st.session_state.input_mode = "Book Title"
+
+    option = st.radio("", ["User ID", "Book Title"], horizontal=True, index=1, key="input_mode")
+
+    # When switching to User ID, reset Book Title fields
     if option == "User ID":
-        user_id = st.number_input("Enter User ID:", min_value=1, step=1)
+        st.session_state["typed_title"] = ""
+        st.session_state["selected_dropdown"] = ""
+        user_id = st.number_input("Enter User ID:", min_value=1, step=1, key="user_input")
         if st.button("Get Recommendations"):
             hybrid_recommend(user_id=int(user_id))
 
     else:
-        # Session state to manage clearing
+        # Session state to manage typed and dropdown book fields
         if "typed_title" not in st.session_state:
             st.session_state.typed_title = ""
         if "selected_dropdown" not in st.session_state:
@@ -168,15 +176,15 @@ with col2:
         def clear_textbox():
             st.session_state.typed_title = ""
 
-        # Popular titles
-        top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
+        # Popular titles for dropdown
+        top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
-        # Text input with clear-dropdown on type
-        typed_title = st.text_input("Type a book title:", value=st.session_state.typed_title, key="typed_title", on_change=clear_dropdown)
-
-        # Dropdown with clear-textbox on select
-        selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, index=0, key="selected_dropdown", on_change=clear_textbox)
+        input_col1, input_col2 = st.columns([2, 2])
+        with input_col1:
+            typed_title = st.text_input("Type a book title:", value=st.session_state.typed_title, key="typed_title", on_change=clear_dropdown)
+        with input_col2:
+            selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
 
         final_title = typed_title.strip() or selected_dropdown.strip()
 
@@ -185,3 +193,4 @@ with col2:
                 hybrid_recommend(book_title=final_title)
             else:
                 st.warning("⚠️ Please enter or select a book title.")
+
