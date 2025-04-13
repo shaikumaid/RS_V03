@@ -46,7 +46,7 @@ def recommend_for_book(title, n=5):
     best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
     # Debugging: Check the match result
-    st.write(f"Best Match for '{title}':", best_match)
+    #st.write(f"Best Match for '{title}':", best_match)
 
     if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
         st.warning(f"No match found for '{title}'. Showing top-rated fallback books.")
