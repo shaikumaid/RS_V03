@@ -90,13 +90,13 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                 f"❗Couldn’t find similar books for the title '**{book_title}**'. "
                 f"Showing top-rated fallback books instead."
             )
-            heading = "📚 Top Rated Books (Fallback)"
+            heading = "📚 Top Rated Books"
         else:
             heading = f"📚 Top {n} Books Similar to '{book_title}'"
 
     else:
         show_fallback = True
-        heading = "📚 Top Rated Books (Fallback)"
+        heading = "📚 Top Rated Books"
 
     if show_fallback:
         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
