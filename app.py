@@ -180,12 +180,12 @@ with col2:
         top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
         book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
+        # Dropdown input
+        selected_dropdown = st.selectbox("Select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
+
         # Top-bottom layout: Textbox at the top, dropdown below
         # Textbox input (fixed height, no expand option)
-        typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
-
-        # Dropdown input
-        selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
+        typed_title = st.text_area("Or Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
 
         final_title = typed_title.strip() or selected_dropdown.strip()
 
