@@ -182,7 +182,7 @@ with col2:
 
         # Top-bottom layout: Textbox at the top, dropdown below
         # Textbox input
-        typed_title = st.text_area("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
+        typed_title = st.text_box("Type a book title:", value=st.session_state.typed_title, height=150, key="typed_title", on_change=clear_dropdown)
 
         # Dropdown input
         selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, key="selected_dropdown", index=0, on_change=clear_textbox)
