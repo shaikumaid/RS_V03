@@ -150,45 +150,38 @@ with col2:
     st.subheader("🔍 Recommend based on:")
     option = st.radio("", ["User ID", "Book Title"], horizontal=True)
 
-    # Initialize session state variables
-    if "typed_title" not in st.session_state:
-        st.session_state.typed_title = ""
-    if "dropdown_title" not in st.session_state:
-        st.session_state.dropdown_title = ""
-
     if option == "User ID":
-        user_id = st.number_input("Enter User ID:", min_value=1, step=1, key="user_input")
-        if st.button("Get Recommendations", key="user_btn"):
+        user_id = st.number_input("Enter User ID:", min_value=1, step=1)
+        if st.button("Get Recommendations"):
             hybrid_recommend(user_id=int(user_id))
 
     else:
-        # Top 100 popular book titles for dropdown
-        top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
-        top_titles = Books_df[Books_df['ISBN'].isin(top_isbns)][['Book-Title']].dropna()
-        book_options = sorted(top_titles['Book-Title'].drop_duplicates().tolist())
+        # Session state to manage clearing
+        if "typed_title" not in st.session_state:
+            st.session_state.typed_title = ""
+        if "selected_dropdown" not in st.session_state:
+            st.session_state.selected_dropdown = ""
 
         def clear_dropdown():
-            st.session_state.dropdown_title = ""
+            st.session_state.selected_dropdown = ""
 
         def clear_textbox():
             st.session_state.typed_title = ""
 
-        # Text input with callback to clear dropdown
-        typed_title = st.text_input("Or type a book title:", key="typed_title", on_change=clear_dropdown)
+        # Popular titles
+        top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
+        book_options = Books_df[Books_df['ISBN'].isin(top_isbns)]['Book-Title'].dropna().drop_duplicates().sort_values().tolist()
 
-        # Dropdown with callback to clear text box
-        dropdown_title = st.selectbox(
-            "Or choose from dropdown:",
-            [""] + book_options,
-            key="dropdown_title",
-            on_change=clear_textbox,
-        )
+        # Text input with clear-dropdown on type
+        typed_title = st.text_input("Type a book title:", value=st.session_state.typed_title, key="typed_title", on_change=clear_dropdown)
 
-        # Determine which input was used
-        final_title = st.session_state.typed_title or st.session_state.dropdown_title
+        # Dropdown with clear-textbox on select
+        selected_dropdown = st.selectbox("Or select from dropdown:", [""] + book_options, index=0, key="selected_dropdown", on_change=clear_textbox)
 
-        if st.button("Get Recommendations", key="book_btn"):
-            if final_title.strip():
+        final_title = typed_title.strip() or selected_dropdown.strip()
+
+        if st.button("Get Recommendations"):
+            if final_title:
                 hybrid_recommend(book_title=final_title)
             else:
                 st.warning("⚠️ Please enter or select a book title.")
