@@ -45,28 +45,30 @@ def recommend_for_book(title, n=5):
     # Find the best match using fuzzywuzzy
     best_match = process.extractOne(title.lower(), Books_df['cleaned_title'].tolist())
 
-    # Debugging: Show match result
-    st.write(f"Best Match for '{title}':", best_match)
+    # Debugging: Check the match result
+    # st.write(f"Best Match for '{title}':", best_match)
 
-    if best_match is None or best_match[1] < 70:
-        st.warning(f"No match found for '{title}'. Showing top-rated fallback books.")
-        return None  # Trigger fallback
+    if best_match is None or best_match[1] < 70:  # Adjust threshold to 70 if needed
+        st.warning(f"No close match found for '{title}'. Showing top-rated fallback books.")
+        return None
+
     matched_title = best_match[0]
     matched = Books_df[Books_df['cleaned_title'] == matched_title]
     if matched.empty:
         st.warning(f"Could not find any matches for '{title}' in the dataset. Showing top-rated fallback books.")
-        return None  # Trigger fallback
+        return None
 
     isbn = matched.iloc[0]['ISBN']
     if isbn not in item_sim_matrix:
         st.warning(f"'{title}' was found but not in the trained model. Showing top-rated fallback books.")
-        return None  # Trigger fallback
+        return None
 
     similar_scores = item_sim_matrix[isbn].drop(labels=[isbn])
     sorted_books = sorted(similar_scores.items(), key=lambda x: (
         x[1],
         filtered_df[filtered_df['ISBN'] == x[0]]['Book-Rating'].mean()
     ), reverse=True)
+
     return [isbn for isbn, _ in sorted_books[:n]]
 
 
