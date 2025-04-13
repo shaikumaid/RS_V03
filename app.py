@@ -104,7 +104,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
     else:
         show_fallback = True
-        heading = "📚 Top Rated Books (Fallback)"
+        heading = "📚 Top Rated Books"
 
     if show_fallback:
         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
@@ -159,7 +159,7 @@ with col2:
         st.markdown("You can either **type** a book title or **select** one from the dropdown.")
         typed_title = st.text_input("Type a book title:")
 
-        top_isbns = filtered_df['ISBN'].value_counts().head(100).index.tolist()
+        top_isbns = filtered_df['ISBN'].value_counts().head(300).index.tolist()
         top_titles = Books_df[Books_df['ISBN'].isin(top_isbns)][['Book-Title']].dropna()
         book_options = top_titles['Book-Title'].drop_duplicates().sort_values().tolist()
         dropdown_title = st.selectbox("Or choose from dropdown:", [""] + book_options)
