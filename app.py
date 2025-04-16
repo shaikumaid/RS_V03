@@ -80,7 +80,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 
     if user_id and user_id in user_item_matrix.index:
         isbns = recommend_for_user(user_id, n)
-        heading = f"📚 Top {n} Recommendations for User ID {user_id}"
+        heading = f" Top {n} Recommendations for User ID {user_id}"
 
     elif user_id and user_id not in user_item_matrix.index:
         show_fallback = True
@@ -88,7 +88,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
             f"❗User ID '**{user_id}**' not found in the system. "
             f"Showing top-rated books instead."
         )
-        heading = "📚 Top Rated Books"
+        heading = " Top Rated Books"
 
     elif book_title:
         isbns = recommend_for_book(book_title, n)
@@ -98,13 +98,13 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
                 f"❗Couldn’t find similar books for the title '**{book_title}**'. Please check and enter again "
                 f"Showing top-rated books instead."
             )
-            heading = "📚 Top Rated Books"
+            heading = " Top Rated Books"
         else:
-            heading = f"📚 Top {n} Books Similar to '{book_title}'"
+            heading = f" Top {n} Books Similar to '{book_title}'"
 
     else:
         show_fallback = True
-        heading = "📚 Top Rated Books"
+        heading = " Top Rated Books"
 
     if show_fallback:
         avg_ratings = filtered_df.groupby('ISBN')['Book-Rating'].mean()
@@ -142,7 +142,7 @@ def hybrid_recommend(user_id=None, book_title=None, n=5):
 # -----------------------------
 # Streamlit UI
 # -----------------------------
-st.title("📚 Book Recommendation System")
+st.title(" Book Recommendation System")
 
 col1, col2, col3 = st.columns([1, 2, 1])
 
